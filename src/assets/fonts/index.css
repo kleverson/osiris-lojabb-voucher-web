@@ -1,0 +1,56 @@
+@font-face {
+  font-family: 'BancoDoBrasil';
+  src: url('BancoDoBrasilTextos-Light-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100;
+}
+
+@font-face {
+  font-family: 'BancoDoBrasil';
+  src: url('BancoDoBrasilTextos-Regular-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'BancoDoBrasil';
+  src: url('BancoDoBrasilTextos-Medium-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'BancoDoBrasil';
+  src: url('BancoDoBrasilTextos-Bold-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 600;
+}
+
+
+@font-face {
+  font-family: 'BancoDoBrasilTitle';
+  src: url('BancoDoBrasilTitulos-XBold-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'BancoDoBrasilTitle';
+  src: url('BancoDoBrasilTitulos-Bold-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'BancoDoBrasilTitle';
+  src: url('BancoDoBrasilTitulos-Medium-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'BancoDoBrasilTitle';
+  src: url('BancoDoBrasilTitulos-Light-web.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 300;
+}
