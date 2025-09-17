@@ -49,7 +49,7 @@ const Voucher = () => {
             <div className="container mx-auto px-8 mt-4">
               <div className="flex gap-6 md:pl-24 flex-col md:flex-row">
                 <img
-                  src={"https://placehold.co/421x555"}
+                  src={currentVoucher?.images[0].url}
                   className="h-[100px] md:h-[auto]"
                   alt=""
                 />

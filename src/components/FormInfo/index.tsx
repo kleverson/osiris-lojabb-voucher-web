@@ -4,12 +4,18 @@ import { States } from "../../types/consts";
 import { InputMask } from "@react-input/mask";
 import { voucherService } from "../../services/voucher";
 import type { VoucherEntity } from "../../types/voucher";
+import ErrorMessage from "../ErrorMessage";
+import { useNavigate } from "react-router-dom";
 
 type props = {
-  voucher: VoucherEntity;
+  codeVoucher: string;
+  variation?: VoucherEntity;
+  onUpdateStatus: (val?: string) => void;
 };
 
-const FormInfo = ({ voucher }: props) => {
+const FormInfo = ({ codeVoucher, variation, onUpdateStatus }: props) => {
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(false);
 
   const {
@@ -21,10 +27,20 @@ const FormInfo = ({ voucher }: props) => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (rescueData: any) => {
     setLoading(true);
     try {
-      await voucherService.rescueVoucher(voucher.codigo, data);
+      const cleanedData = {
+        ...rescueData,
+        document: rescueData.document?.replace(/\D/g, ""),
+        zipcode: rescueData.zipcode?.replace(/\D/g, ""),
+      };
+      const { data: response } = await voucherService.rescueVoucher(
+        codeVoucher,
+        cleanedData,
+        variation?.id
+      );
+      navigate(`/${response.rescue.code}/status`);
     } catch (e) {
       console.log("[error]", e);
     } finally {
@@ -32,15 +48,8 @@ const FormInfo = ({ voucher }: props) => {
     }
   };
 
-  const ErrorMessage = ({ error }: { error?: string }) => {
-    if (!error) return null;
-    return <p className="text-red-500 text-sm">{error}</p>;
-  };
+  const cepValue = watch("zipcode");
 
-  // Observa o valor do CEP
-  const cepValue = watch("cep");
-
-  // Busca na BrasilAPI quando CEP está completo
   useEffect(() => {
     const cepSemMascara = cepValue?.replace(/\D/g, "");
     if (cepSemMascara?.length === 8) {
@@ -48,10 +57,10 @@ const FormInfo = ({ voucher }: props) => {
         .then((res) => res.json())
         .then((data) => {
           if (!data?.errors) {
-            setValue("endereco", data.street || "");
-            setValue("bairro", data.neighborhood || "");
-            setValue("cidade", data.city || "");
-            setValue("estado", data.state || "");
+            setValue("address", data.street || "");
+            setValue("neighborhood", data.neighborhood || "");
+            setValue("city", data.city || "");
+            setValue("state", data.state || "");
           }
         })
         .catch(() => console.error("Erro ao buscar o CEP"));
@@ -76,7 +85,7 @@ const FormInfo = ({ voucher }: props) => {
                 CPF
               </label>
               <Controller
-                name="cpf"
+                name="document"
                 control={control}
                 rules={{
                   required: "CPF é obrigatório",
@@ -100,8 +109,8 @@ const FormInfo = ({ voucher }: props) => {
                   />
                 )}
               />
-              {errors.cpf && (
-                <ErrorMessage error={errors.cpf.message as string} />
+              {errors.document && (
+                <ErrorMessage error={errors.document.message as string} />
               )}
             </div>
 
@@ -113,10 +122,10 @@ const FormInfo = ({ voucher }: props) => {
               <input
                 type="text"
                 className="w-full border p-2 rounded border-[#CECECE]"
-                {...register("nome", { required: "Nome é obrigatório" })}
+                {...register("name", { required: "Nome é obrigatório" })}
               />
-              {errors.nome && (
-                <ErrorMessage error={errors.nome.message as string} />
+              {errors.name && (
+                <ErrorMessage error={errors.name.message as string} />
               )}
             </div>
 
@@ -149,7 +158,7 @@ const FormInfo = ({ voucher }: props) => {
                 CEP
               </label>
               <Controller
-                name="cep"
+                name="zipcode"
                 control={control}
                 rules={{
                   required: "CEP é obrigatório",
@@ -173,8 +182,8 @@ const FormInfo = ({ voucher }: props) => {
                   />
                 )}
               />
-              {errors.cep && (
-                <ErrorMessage error={errors.cep.message as string} />
+              {errors.zipcode && (
+                <ErrorMessage error={errors.zipcode.message as string} />
               )}
             </div>
 
@@ -186,12 +195,12 @@ const FormInfo = ({ voucher }: props) => {
               <input
                 type="text"
                 className="w-full border p-2 rounded border-[#CECECE]"
-                {...register("endereco", {
+                {...register("address", {
                   required: "Endereço é obrigatório",
                 })}
               />
-              {errors.endereco && (
-                <ErrorMessage error={errors.endereco.message as string} />
+              {errors.address && (
+                <ErrorMessage error={errors.address.message as string} />
               )}
             </div>
 
@@ -203,10 +212,10 @@ const FormInfo = ({ voucher }: props) => {
               <input
                 type="text"
                 className="w-full border p-2 rounded border-[#CECECE]"
-                {...register("numero", { required: "Número é obrigatório" })}
+                {...register("number", { required: "Número é obrigatório" })}
               />
-              {errors.numero && (
-                <ErrorMessage error={errors.numero.message as string} />
+              {errors.number && (
+                <ErrorMessage error={errors.number.message as string} />
               )}
             </div>
           </div>
@@ -220,10 +229,12 @@ const FormInfo = ({ voucher }: props) => {
               <input
                 type="text"
                 className="w-full border p-2 rounded border-[#CECECE]"
-                {...register("bairro", { required: "Bairro é obrigatório" })}
+                {...register("neighborhood", {
+                  required: "Bairro é obrigatório",
+                })}
               />
-              {errors.bairro && (
-                <ErrorMessage error={errors.bairro.message as string} />
+              {errors.neighborhood && (
+                <ErrorMessage error={errors.neighborhood.message as string} />
               )}
             </div>
 
@@ -235,10 +246,10 @@ const FormInfo = ({ voucher }: props) => {
               <input
                 type="text"
                 className="w-full border p-2 rounded border-[#CECECE]"
-                {...register("cidade", { required: "Cidade é obrigatória" })}
+                {...register("city", { required: "Cidade é obrigatória" })}
               />
-              {errors.cidade && (
-                <ErrorMessage error={errors.cidade.message as string} />
+              {errors.city && (
+                <ErrorMessage error={errors.city.message as string} />
               )}
             </div>
 
@@ -249,7 +260,7 @@ const FormInfo = ({ voucher }: props) => {
               </label>
               <select
                 className="w-full border p-2 rounded border-[#CECECE]"
-                {...register("estado", { required: "Estado é obrigatório" })}
+                {...register("state", { required: "Estado é obrigatório" })}
               >
                 <option value="">Selecione</option>
                 {States.map((item, index: number) => (
@@ -258,8 +269,8 @@ const FormInfo = ({ voucher }: props) => {
                   </option>
                 ))}
               </select>
-              {errors.estado && (
-                <ErrorMessage error={errors.estado.message as string} />
+              {errors.state && (
+                <ErrorMessage error={errors.state.message as string} />
               )}
             </div>
           </div>

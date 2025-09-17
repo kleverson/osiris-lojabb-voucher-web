@@ -1,11 +1,13 @@
+import type { Shipping } from "../../types/shipping";
 import TrackInfo from "../TrackInfo";
 
 type props = {
+  data?: Shipping;
   showTrack?: boolean;
   currentTrack?: number;
 };
 
-const DeliveryInfo = ({ showTrack, currentTrack }: props) => {
+const DeliveryInfo = ({ data, showTrack, currentTrack }: props) => {
   return (
     <div className="py-10">
       <h3 className="font-title font-medium text-xl md:text-[32px]">
@@ -19,8 +21,8 @@ const DeliveryInfo = ({ showTrack, currentTrack }: props) => {
           <h4 className="text-xl font-medium font-title">
             Informações de contato
           </h4>
-          <p>Jessica Jones</p>
-          <p>jess_jones@email.com.br</p>
+          <p>{data?.shipping.name}</p>
+          <p>{data?.shipping.email}</p>
         </div>
 
         <div className="flex-1 gap-2 py-5">
@@ -28,8 +30,9 @@ const DeliveryInfo = ({ showTrack, currentTrack }: props) => {
             Endereço pra entrega
           </h4>
           <p>
-            CEP 00000-000 Rua Alaís Jardim de Oliveira 325 Bairro da Luz,
-            Horizonte - CE
+            CEP {data?.shipping.address.cep} {data?.shipping.address.endereco}{" "}
+            {data?.shipping.address.numero}, {data?.shipping.address.bairro},{" "}
+            {data?.shipping.address.municipio} - {data?.shipping.address.uf}
           </p>
         </div>
 
@@ -38,7 +41,7 @@ const DeliveryInfo = ({ showTrack, currentTrack }: props) => {
             <strong className="text-xl font-medium font-title">
               Previsão de entrega:
             </strong>{" "}
-            09/03/1999
+            {data?.shipping.delivery_estimated}
           </p>
           <p>
             <strong className="text-xl font-medium font-title">
@@ -46,12 +49,12 @@ const DeliveryInfo = ({ showTrack, currentTrack }: props) => {
             </strong>
             <br />
             <a
-              href="http://google.com"
+              href={data?.shipping.trackingUrl}
               target="_blank"
               rel="noreferrer"
               className="text-blue text-underline font-bold"
             >
-              www.entrega.com.br
+              {data?.shipping.trackingUrl}
             </a>
           </p>
         </div>

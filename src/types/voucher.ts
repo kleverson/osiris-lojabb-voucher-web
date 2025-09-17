@@ -21,6 +21,7 @@ export interface VoucherEntity {
   profundidade: number;
   data_evento?: Date;
   images: ImageEntity[];
+  variations?: VoucherEntity[];
 }
 
 export interface ImageEntity {

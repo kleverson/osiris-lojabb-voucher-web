@@ -17,3 +17,21 @@
     transform: rotate(360deg);
   }
 }
+
+.spinner {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid;
+  border-color: #fcfc30 #465eff;
+  animation: l1 1s infinite;
+}
+
+.spinner.success {
+  border-color: #ffffff #465eff;
+}
+@keyframes l1 {
+  to {
+    transform: rotate(0.5turn);
+  }
+}
