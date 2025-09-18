@@ -8,7 +8,11 @@ const Loading = ({ theme }: props) => {
     <div className="bg-yellow h-screen w-screen flex justify-center items-center">
       <span
         className="loader"
-        style={{ "--border-color": theme == "BLUE" ? "#465EFF" : "#FCFC30" }}
+        style={
+          {
+            "--border-color": theme === "BLUE" ? "#465EFF" : "#FCFC30",
+          } as React.CSSProperties
+        }
       ></span>
     </div>
   );

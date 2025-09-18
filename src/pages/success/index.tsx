@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { voucherService } from "../../services/voucher";
 import type { VoucherEntity } from "../../types/voucher";
 import Header from "../../components/Header";
-import FormInfo from "../../components/FormInfo";
 import DeliveryInfo from "../../components/Deliveryinfo";
 
 const Rescue = () => {
@@ -13,6 +12,7 @@ const Rescue = () => {
   const [currentVoucher, setCurrentVoucher] = useState<VoucherEntity>();
 
   async function getVoucher(code: string) {
+    console.log(loading);
     setLoading(true);
     try {
       const { data } = await voucherService.getVoucher(code);

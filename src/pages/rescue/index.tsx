@@ -28,6 +28,7 @@ const Rescue = () => {
     } catch (e) {
       console.log("[ERROR]", e);
     } finally {
+      console.log(loading);
       setLoading(false);
     }
   }, []);
@@ -83,6 +84,30 @@ const Rescue = () => {
 
   return (
     <>
+      {/* Loading full screen */}
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-white/90 z-50 flex flex-col items-center justify-center gap-4"
+          >
+            <Spinner type="primary" />{" "}
+            {/* ou "success", "secondary", conforme seu Spinner */}
+            <motion.span
+              className="text-xl font-medium text-blue-700"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              Carregando dados...
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Status overlay */}
       {status && (
         <AnimatePresence>
           <motion.div
@@ -91,7 +116,7 @@ const Rescue = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.5 }}
-            className={`p-4 rounded text-center font-medium h-screen w-screen absolute top-0 left-0 flex items-center justify-center gap-2 ${
+            className={`p-4 rounded text-center h-screen w-screen fixed top-0 left-0 flex items-center justify-center gap-2 ${
               status === "Gerando NFe..."
                 ? "bg-green-900 text-white"
                 : status === "CANCELADO"
@@ -125,6 +150,7 @@ const Rescue = () => {
         </AnimatePresence>
       )}
 
+      {/* Main content */}
       {!submitted && (
         <div className="container mx-auto">
           <Header title="Resumo do mimo" />
@@ -132,7 +158,7 @@ const Rescue = () => {
           <div className="py-10 md:py-20 w-[90%] md:w-[80%] mx-auto">
             <div className="product flex md:flex-row flex-col gap-14 py-10 border-b border-b-[#CECECE]">
               <div className="thumb bg-[#F4F4F6] px-14 py-11">
-                <img src={currentVoucher?.images[0].url} width={80} alt="" />
+                <img src={"/imgs/mimo_desk.png"} width={80} alt="" />
               </div>
 
               <div className="flex flex-col gap-2">

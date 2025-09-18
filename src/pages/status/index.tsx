@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { voucherService } from "../../services/voucher";
-import type { VoucherEntity } from "../../types/voucher";
 import Header from "../../components/Header";
-import FormInfo from "../../components/FormInfo";
 import DeliveryInfo from "../../components/Deliveryinfo";
 import type { Shipping } from "../../types/shipping";
 
@@ -15,6 +13,7 @@ const Status = () => {
 
   async function getVoucher(code: string) {
     setLoading(true);
+    console.log(loading);
     try {
       const { data } = await voucherService.checkStatus(code);
       setCurrentShipping(data);

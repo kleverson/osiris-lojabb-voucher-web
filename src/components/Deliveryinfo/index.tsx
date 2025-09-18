@@ -7,7 +7,7 @@ type props = {
   currentTrack?: number;
 };
 
-const DeliveryInfo = ({ data, showTrack, currentTrack }: props) => {
+const DeliveryInfo = ({ data, showTrack }: props) => {
   return (
     <div className="py-10">
       <h3 className="font-title font-medium text-xl md:text-[32px]">
