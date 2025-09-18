@@ -1,3 +1,4 @@
+import { div } from "framer-motion/client";
 import type { Shipping } from "../../types/shipping";
 import TrackInfo from "../TrackInfo";
 
@@ -36,28 +37,32 @@ const DeliveryInfo = ({ data, showTrack }: props) => {
           </p>
         </div>
 
-        <div className="flex-1 gap-2 py-5">
-          <p>
-            <strong className="text-xl font-medium font-title">
-              Previsão de entrega:
-            </strong>{" "}
-            {data?.shipping.delivery_estimated}
-          </p>
-          <p>
-            <strong className="text-xl font-medium font-title">
-              Para mais detalhes, acesse:
-            </strong>
-            <br />
-            <a
-              href={data?.shipping.trackingUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="text-blue text-underline font-bold"
-            >
-              {data?.shipping.trackingUrl}
-            </a>
-          </p>
-        </div>
+        {data?.shipping.trackingUrl ? (
+          <div className="flex-1 gap-2 py-5">
+            <p>
+              <strong className="text-xl font-medium font-title">
+                Previsão de entrega:
+              </strong>{" "}
+              {data?.shipping.delivery_estimated}
+            </p>
+            <p>
+              <strong className="text-xl font-medium font-title">
+                Para mais detalhes, acesse:
+              </strong>
+              <br />
+              <a
+                href={data?.shipping.trackingUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue text-underline font-bold"
+              >
+                {data?.shipping.trackingUrl}
+              </a>
+            </p>
+          </div>
+        ) : (
+          <div className="flex-1 gap-2 py-5"></div>
+        )}
       </div>
     </div>
   );

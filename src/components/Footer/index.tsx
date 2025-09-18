@@ -38,7 +38,7 @@ const Footer = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-8 border-t border-t-blue md:border-none mt-6 pt-6 md:mt-0 md:pt-0">
+              <div className="flex items-center md:gap-8 gap-4 border-t border-t-blue md:border-none mt-6 pt-6 md:mt-0 md:pt-0">
                 <img src="/imgs/brand_emaragon.png" alt="" />
                 <div className="border-l border-l-blue h-8"></div>
                 <img src="/imgs/brand_bb.png" alt="" />
@@ -65,17 +65,17 @@ const Footer = () => {
 
               <ul className="grid grid-cols-2 md:flex text-xs items-center w-full flex-col md:flex-row text-[#ffffff] flex-1 justify-end">
                 <li>
-                  <a href="" className="px-[10px]">
+                  <a href="" className="px-0 md:px-[10px] py-2">
                     Troca e devolução
                   </a>
                 </li>
                 <li>
-                  <a href="" className="px-[10px]">
+                  <a href="" className="px-0 md:px-[10px] py-2">
                     Políticas de uso e Privacidade
                   </a>
                 </li>
                 <li>
-                  <a href="" className="px-[10px]">
+                  <a href="" className="px-0 md:px-[10px] py-2">
                     Suporte técnico
                   </a>
                 </li>

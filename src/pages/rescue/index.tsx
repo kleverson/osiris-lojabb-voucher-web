@@ -157,8 +157,8 @@ const Rescue = () => {
 
           <div className="py-10 md:py-20 w-[90%] md:w-[80%] mx-auto">
             <div className="product flex md:flex-row flex-col gap-14 py-10 border-b border-b-[#CECECE]">
-              <div className="thumb bg-[#F4F4F6] px-14 py-11">
-                <img src={"/imgs/mimo_desk.png"} width={80} alt="" />
+              <div className="thumb bg-[#F4F4F6] px-14 py-11 max-w-[50%]">
+                <img src={currentVoucher?.images[0].url} width={80} alt="" />
               </div>
 
               <div className="flex flex-col gap-2">

@@ -20,6 +20,7 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
 
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const {
     register,
@@ -32,6 +33,7 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
 
   const onSubmit = async (rescueData: any) => {
     setLoading(true);
+    setIsSending(true);
     try {
       const cleanedData = {
         ...rescueData,
@@ -43,7 +45,10 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
         cleanedData,
         variation?.id
       );
-      navigate(`/${response.rescue.code}/status`);
+      setIsSending(false);
+      setTimeout(() => {
+        navigate(`/${response.rescue.code}/status`);
+      }, 300);
     } catch (e) {
       console.log("[error]", e);
     } finally {
@@ -75,7 +80,7 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
   return (
     <>
       <AnimatePresence>
-        {cepLoading && (
+        {cepLoading || isSending ? (
           <motion.div
             key="cep-loading"
             initial={{ opacity: 0 }}
@@ -89,9 +94,11 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 1, repeat: Infinity }}
             >
-              Consultando CEP...
+              {isSending ? "Resgatando voucher..." : "Consultando Cep..."}
             </motion.span>
           </motion.div>
+        ) : (
+          <></>
         )}
       </AnimatePresence>
       <div className="py-10">
