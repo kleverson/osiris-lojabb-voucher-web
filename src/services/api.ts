@@ -1,8 +1,7 @@
 import axios from "axios";
 
-//https://apiresgate.osiris-tech.co/api/v1
 const api = axios.create({
-  baseURL: "http://localhost:8585/api/v1",
+  baseURL: "https://apiresgate.osiris-tech.co/api/v1",
   timeout: 300000,
   headers: {
     "Content-Type": "application/json",
