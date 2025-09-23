@@ -3,7 +3,12 @@ import FormValidate from "../../components/FormValidate";
 const Home = () => {
   return (
     <>
-      <div className="wrapper h-screen w-screen bg-[url('/imgs/bg_mobile.png')] md:bg-[url('/imgs/bg.png')] bg-cover bg-center">
+      <div
+        className="wrapper h-screen w-screen bg-[url('/imgs/bg_mobile.png')] md:bg-[url('/imgs/bg.png')] bg-cover bg-center md:bg-right"
+        style={{
+          backgroundSize: window.innerWidth < 768 ? "100% 100%" : "90% 100%", // mobile vs desktop
+        }}
+      >
         <div className="container mx-auto py-6 md:py-10">
           <h1 className="px-6">
             <img src="/imgs/storebrand.png" alt="" />

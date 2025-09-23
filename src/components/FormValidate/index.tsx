@@ -4,6 +4,7 @@ import { voucherService } from "../../services/voucher";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ErrorMessage from "../ErrorMessage";
+import axios from "axios";
 
 const FormValidate = () => {
   const navigate = useNavigate();
@@ -24,9 +25,25 @@ const FormValidate = () => {
         navigate(`/${values.voucher}`);
       }
       console.log(data);
-    } catch (e) {
-      toast.error("Ocorreu um erro!");
-      console.log("[error]", e);
+    } catch (error: unknown) {
+      let message = "Ocorreu um erro";
+
+      if (axios.isAxiosError(error)) {
+        // erro do Axios
+        if (error.response) {
+          // resposta do servidor
+
+          message = error.response.data?.msg || message;
+          toast.error(message);
+        } else if (error.request) {
+          // sem resposta
+          console.error("Sem resposta do servidor:", error.request);
+          message = "Sem resposta do servidor";
+        }
+      } else {
+        // erro genérico
+        console.error("Erro desconhecido:", error);
+      }
     } finally {
       setLoading(false);
     }

@@ -101,7 +101,7 @@ const Rescue = () => {
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 1, repeat: Infinity }}
             >
-              Carregando dados...
+              Carregando dados do mimo...
             </motion.span>
           </motion.div>
         )}
@@ -161,13 +161,10 @@ const Rescue = () => {
                 <img src={currentVoucher?.images[0].url} width={80} alt="" />
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 justify-center">
                 <h2 className="text-base md:text-xl font-medium font-title">
                   {currentVoucher?.nome}
                 </h2>
-                <strong className="font-medium font-title text-xl md:text-3xl text-blue">
-                  Grátis
-                </strong>
 
                 {currentVoucher?.variations && (
                   <div className="flex-1 mt-6">
@@ -192,11 +189,22 @@ const Rescue = () => {
               </div>
             </div>
 
-            <FormInfo
-              codeVoucher={code!}
-              variation={currentVariation}
-              onUpdateStatus={onUpdateStatus}
-            />
+            {currentVoucher?.usado == true && (
+              <div className="bg-red-400 p-4 rounded-2xl my-6">
+                <p className="md:text-xl text-base text-white">
+                  <strong>Ops!</strong> <br /> Este voucher não esta mais
+                  disponivel para resgate!
+                </p>
+              </div>
+            )}
+
+            {!currentVoucher?.usado && (
+              <FormInfo
+                codeVoucher={code!}
+                variation={currentVariation}
+                onUpdateStatus={onUpdateStatus}
+              />
+            )}
           </div>
         </div>
       )}

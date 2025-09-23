@@ -8,6 +8,8 @@ import type { VoucherEntity } from "../../types/voucher";
 import ErrorMessage from "../ErrorMessage";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../Loading/Spinner";
+import ConfirmDialog from "../Confirm";
+import { isValidDocument } from "../../util/fns";
 
 type props = {
   codeVoucher: string;
@@ -21,6 +23,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isConfirm, setIsConfirm] = useState(false);
+
+  const [formValues, setFormValues] = useState<any>(null);
 
   const {
     register,
@@ -32,6 +37,8 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
   } = useForm();
 
   const onSubmit = async (rescueData: any) => {
+    setFormValues(null);
+    setIsConfirm(false);
     setLoading(true);
     setIsSending(true);
     try {
@@ -54,6 +61,33 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const onConfirm = async (rescueData: any) => {
+    setIsConfirm(true);
+    setFormValues(rescueData);
+    // setLoading(true);
+    // setIsSending(true);
+    // try {
+    //   const cleanedData = {
+    //     ...rescueData,
+    //     document: rescueData.document?.replace(/\D/g, ""),
+    //     zipcode: rescueData.zipcode?.replace(/\D/g, ""),
+    //   };
+    //   const { data: response } = await voucherService.rescueVoucher(
+    //     codeVoucher,
+    //     cleanedData,
+    //     variation?.id
+    //   );
+    //   setIsSending(false);
+    //   setTimeout(() => {
+    //     navigate(`/${response.rescue.code}/status`);
+    //   }, 300);
+    // } catch (e) {
+    //   console.log("[error]", e);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const cepValue = watch("zipcode");
@@ -79,6 +113,11 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
 
   return (
     <>
+      <ConfirmDialog
+        isOpen={isConfirm}
+        data={formValues}
+        onConfirm={onSubmit}
+      />
       <AnimatePresence>
         {cepLoading || isSending ? (
           <motion.div
@@ -103,12 +142,12 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
       </AnimatePresence>
       <div className="py-10">
         <h3 className="font-title font-medium text-xl md:text-[32px]">
-          Precisamos de algumas informações
+          Preencha com os dados de entrega
         </h3>
 
         <div className="py-4 md:py-10">
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onConfirm)}
             className="flex flex-col gap-10"
           >
             <div className="flex md:flex-row flex-col justify-between gap-4 md:gap-6">
@@ -123,11 +162,12 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                   rules={{
                     required: "CPF é obrigatório",
                     validate: (value) => {
-                      const cpfSemMascara = value?.replace(/\D/g, "");
-                      return (
-                        cpfSemMascara?.length === 11 ||
-                        "CPF deve ter 11 dígitos"
-                      );
+                      return isValidDocument(value);
+                      // const cpfSemMascara = value?.replace(/\D/g, "");
+                      // return (
+                      //   cpfSemMascara?.length === 11 ||
+                      //   "CPF deve ter 11 dígitos"
+                      // );
                     },
                   }}
                   render={({ field }) => (

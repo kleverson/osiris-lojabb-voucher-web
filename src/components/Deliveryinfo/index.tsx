@@ -1,4 +1,3 @@
-import { div } from "framer-motion/client";
 import type { Shipping } from "../../types/shipping";
 import TrackInfo from "../TrackInfo";
 
@@ -8,14 +7,14 @@ type props = {
   currentTrack?: number;
 };
 
-const DeliveryInfo = ({ data, showTrack }: props) => {
+const DeliveryInfo = ({ data, showTrack, currentTrack }: props) => {
   return (
     <div className="py-10">
       <h3 className="font-title font-medium text-xl md:text-[32px]">
         Acompanhe a entrega
       </h3>
 
-      {showTrack && <TrackInfo />}
+      {showTrack && <TrackInfo currentTrack={Number(currentTrack)} />}
 
       <div className="py-4 md:py-10 flex flex-col md:flex-row gap-4">
         <div className="flex-1 gap-2 py-5">

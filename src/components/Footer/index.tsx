@@ -52,7 +52,7 @@ const Footer = () => {
         <div className="container py-4 mx-auto font-body">
           <div className="w-[90%] md:w-[80%] mx-auto">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-5  justify-between text-xs text-[#ffffff]">
-              <div className="flex flex-1 flex-col md:flex-row  gap-5 ">
+              <div className="flex flex-1 flex-col md:flex-row  gap-6 justify-between">
                 <span>
                   EMARANGON BRINDES PROMOCIONAIS LTDA <br /> CNPJ
                   17.921.797/0001-62
@@ -63,20 +63,23 @@ const Footer = () => {
                 </span>
               </div>
 
-              <ul className="grid grid-cols-2 md:flex text-xs items-center w-full flex-col md:flex-row text-[#ffffff] flex-1 justify-end">
+              <ul className="grid grid-cols-2 md:flex text-xs items-center w-full flex-col md:flex-row gap-4 text-[#ffffff] flex-1 justify-end">
                 <li>
-                  <a href="" className="px-0 md:px-[10px] py-2">
+                  <a
+                    href="https://lojabbprodutos.com.br/reembolso_devolucoes/"
+                    className="px-0 md:px-[10px] py-2 hover:underline"
+                    target="_blank"
+                  >
                     Troca e devolução
                   </a>
                 </li>
                 <li>
-                  <a href="" className="px-0 md:px-[10px] py-2">
+                  <a
+                    href="https://lojabbprodutos.com.br/politica-de-privacidade/"
+                    className="px-0 md:px-[10px] py-2 hover:underline"
+                    target="_blank"
+                  >
                     Políticas de uso e Privacidade
-                  </a>
-                </li>
-                <li>
-                  <a href="" className="px-0 md:px-[10px] py-2">
-                    Suporte técnico
                   </a>
                 </li>
               </ul>
