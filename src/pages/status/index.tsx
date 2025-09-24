@@ -14,6 +14,8 @@ const Status = () => {
 
   const [currentShipping, setCurrentShipping] = useState<Shipping>();
 
+  const [currentTracking, setCurrentTracking] = useState(1);
+
   async function getVoucher(code: string) {
     setLoading(true);
     console.log(loading);
@@ -27,6 +29,24 @@ const Status = () => {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (currentShipping) {
+      if (currentShipping?.shipping.trackingUrl) {
+        console.log(currentShipping.shipping.trackingstatus?.status);
+        switch (currentShipping.shipping.trackingstatus?.status) {
+          case "Entregue":
+            setCurrentTracking(5);
+            break;
+          case "Saiu para entrega":
+            setCurrentTracking(3);
+            break;
+          default:
+            setCurrentTracking(2);
+        }
+      }
+    }
+  }, [currentShipping]);
 
   useEffect(() => {
     if (code) {
@@ -78,7 +98,7 @@ const Status = () => {
           <DeliveryInfo
             showTrack={true}
             data={currentShipping}
-            currentTrack={1}
+            currentTrack={currentTracking}
           />
         </div>
       </div>

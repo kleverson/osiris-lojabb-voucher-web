@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const steps = [
   "RECEBIDO",
-  "CONFIRMADO",
+  "EM SEPARAÇÃO",
   "ENVIADO",
   "SAIU PRA ENTREGA",
   "ENTREGUE",

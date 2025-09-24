@@ -30,12 +30,18 @@ export interface Image {
   image_id: string;
 }
 
+export interface TrackingStatus {
+  desc: string;
+  status: string;
+}
+
 export interface Shipping {
   name: string;
   email: string;
   address: Address;
   delivery_estimated: string;
   trackingUrl: string;
+  trackingstatus?: TrackingStatus;
 }
 
 export interface Address {
