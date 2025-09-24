@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import Spinner from "../Loading/Spinner";
 import ConfirmDialog from "../Confirm";
 import { isValidDocument } from "../../util/fns";
+import { toast } from "react-toastify";
 
 type props = {
   codeVoucher: string;
@@ -56,10 +57,11 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
       setTimeout(() => {
         navigate(`/${response.rescue.code}/status`);
       }, 300);
-    } catch (e) {
-      console.log("[error]", e);
+    } catch (e: any) {
+      toast.error(e.response.data.msg);
     } finally {
       setLoading(false);
+      setIsSending(false);
     }
   };
 
@@ -117,6 +119,7 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
         isOpen={isConfirm}
         data={formValues}
         onConfirm={onSubmit}
+        onClose={() => setIsConfirm(false)}
       />
       <AnimatePresence>
         {cepLoading || isSending ? (

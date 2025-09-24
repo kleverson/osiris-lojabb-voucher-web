@@ -33,16 +33,19 @@ const Status = () => {
   useEffect(() => {
     if (currentShipping) {
       if (currentShipping?.shipping.trackingUrl) {
-        console.log(currentShipping.shipping.trackingstatus?.status);
-        switch (currentShipping.shipping.trackingstatus?.status) {
-          case "Entregue":
-            setCurrentTracking(5);
-            break;
-          case "Saiu para entrega":
-            setCurrentTracking(3);
-            break;
-          default:
-            setCurrentTracking(2);
+        if (!currentShipping.shipping.trackingstatus?.status) {
+          setCurrentTracking(1);
+        } else {
+          switch (currentShipping.shipping.trackingstatus?.status) {
+            case "Entregue":
+              setCurrentTracking(5);
+              break;
+            case "Saiu para entrega":
+              setCurrentTracking(3);
+              break;
+            default:
+              setCurrentTracking(2);
+          }
         }
       }
     }

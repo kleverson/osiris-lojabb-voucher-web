@@ -4,8 +4,9 @@ type props = {
   isOpen?: boolean;
   data: any;
   onConfirm: (val: any) => void;
+  onClose: () => void;
 };
-const ConfirmDialog = ({ isOpen, data, onConfirm }: props) => {
+const ConfirmDialog = ({ isOpen, data, onConfirm, onClose }: props) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -67,7 +68,13 @@ const ConfirmDialog = ({ isOpen, data, onConfirm }: props) => {
               </div>
             </div>
 
-            <div className="border-t border-t-gray-300 py-4 mt-5 flex justify-end">
+            <div className="border-t border-t-gray-300 py-4 mt-5 flex justify-between">
+              <button
+                onClick={onClose}
+                className="bg-red-400 text-white w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-bold font-title"
+              >
+                Cancelar
+              </button>
               <button
                 onClick={() => onConfirm(data)}
                 className="bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-bold font-title"
