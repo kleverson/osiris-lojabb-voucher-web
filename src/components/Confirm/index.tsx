@@ -69,7 +69,7 @@ const ConfirmDialog = ({ isOpen, data, onConfirm }: props) => {
 
             <div className="border-t border-t-gray-300 py-4 mt-5 flex justify-end">
               <button
-                onClick={(e) => onConfirm(data)}
+                onClick={() => onConfirm(data)}
                 className="bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-bold font-title"
               >
                 Confirmar
