@@ -7,7 +7,7 @@ import ErrorMessage from "../ErrorMessage";
 import axios from "axios";
 
 type props = {
-  code: string;
+  code?: string;
   searchByEmail?: boolean;
 };
 
@@ -32,10 +32,12 @@ const FormCheckByEmail = ({ code, searchByEmail }: props) => {
           navigate(`/${data.code}/rescue`, { state: values });
         }
       } else {
-        const { data } = await voucherService.checkOwnerVoucher(code, values);
+        if (code) {
+          const { data } = await voucherService.checkOwnerVoucher(code, values);
 
-        if (data.code) {
-          navigate(`/${data.code}/rescue`, { state: values });
+          if (data.code) {
+            navigate(`/${data.code}/rescue`, { state: values });
+          }
         }
       }
     } catch (error: unknown) {

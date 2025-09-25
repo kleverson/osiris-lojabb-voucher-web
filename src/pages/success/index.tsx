@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { voucherService } from "../../services/voucher";
-import type { VoucherEntity } from "../../types/voucher";
-import Header from "../../components/Header";
-import DeliveryInfo from "../../components/Deliveryinfo";
 import type { Shipping } from "../../types/shipping";
 import { motion } from "framer-motion";
 

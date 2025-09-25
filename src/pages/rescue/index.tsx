@@ -34,12 +34,12 @@ const Rescue = () => {
     try {
       const { data } = await voucherService.getVoucher(code);
       setCurrentVoucher(data);
-      setVariationIndex(1);
     } catch (e) {
       console.log("[ERROR]", e);
     } finally {
       console.log(loading);
       setLoading(false);
+      setVariationIndex(0);
     }
   }, []);
 
@@ -56,7 +56,7 @@ const Rescue = () => {
     if (currentVoucher?.variations?.length) {
       setCurrentVariation(currentVoucher.variations[variationIndex]);
     }
-  }, [variationIndex]);
+  }, [currentVoucher, variationIndex]);
 
   const onUpdateStatus = useCallback((code?: string) => {
     if (!code) return;

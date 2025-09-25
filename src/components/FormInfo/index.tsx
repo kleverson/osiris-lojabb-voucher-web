@@ -8,7 +8,6 @@ import type { VoucherEntity } from "../../types/voucher";
 import ErrorMessage from "../ErrorMessage";
 import { useLocation, useNavigate } from "react-router-dom";
 import Spinner from "../Loading/Spinner";
-import ConfirmDialog from "../Confirm";
 import { isValidDocument } from "../../util/fns";
 import { toast } from "react-toastify";
 
@@ -32,8 +31,6 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
   const [isSending, setIsSending] = useState(false);
   const [isConfirm, setIsConfirm] = useState(false);
 
-  const [formValues, setFormValues] = useState<any>(null);
-
   const {
     register,
     handleSubmit,
@@ -45,11 +42,11 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
   } = useForm();
 
   const handlerSubmit = async () => {
-    setFormValues(null);
     setIsConfirm(false);
     setLoading(true);
     setIsSending(true);
 
+    console.log(isConfirm);
     const rescueData = getValues();
     try {
       const cleanedData = {
@@ -76,8 +73,8 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
   };
 
   const onConfirm = async (rescueData: any) => {
+    console.info("[d]", rescueData);
     setOnConfirmData(true);
-    setFormValues(rescueData);
     setOnConfirm();
   };
 
@@ -110,7 +107,9 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
   }, [email]);
 
   const inputClass = `w-full  p-2 rounded ${
-    !onConfirmData ? "border border-[#CECECE]" : "border-none font-bold px-0"
+    !onConfirmData
+      ? "border border-[#CECECE]"
+      : "border-none font-bold px-0 readonly:bg-transparent readonly:border-none readonly:outline-none disabled:bg-transparent disabled:border-none"
   }`;
 
   return (
@@ -384,7 +383,7 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
                   <label className="text-sm">
                     Declaro ter lido e concordado com os termos do{" "}
                     <a
-                      href="http://google.com"
+                      href="https://lojabbprodutos.com.br/politica-de-privacidade/"
                       target="_blank"
                       rel="noreferrer"
                       className="text-blue text-underline font-bold"
@@ -411,14 +410,23 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
                   Resgatar
                 </button>
               ) : (
-                <button
-                  type="submit"
-                  disabled={loading}
-                  onClick={handlerSubmit}
-                  className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
-                >
-                  {loading ? "Resgatando..." : "Confirmar resgate"}
-                </button>
+                <div className="flex gap-6">
+                  <button
+                    onClick={() => setOnConfirmData(false)}
+                    type="button"
+                    className=" bg-red-400 text-white w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
+                  >
+                    Editar dados
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    onClick={handlerSubmit}
+                    className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
+                  >
+                    {loading ? "Resgatando..." : "Confirmar resgate"}
+                  </button>
+                </div>
               )}
             </div>
           </form>
