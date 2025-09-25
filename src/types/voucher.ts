@@ -9,7 +9,9 @@ export interface VoucherEntity {
   id_produto_pai: number;
   nome: string;
   descricao: string;
+  deposito_nome: string;
   codigo: string;
+  is_private: boolean;
   categoria: string;
   tipo: string;
   situacao: string;

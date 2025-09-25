@@ -5,6 +5,7 @@ export default {
       colors: {
         blue: "#465EFF",
         yellow: "#FCFC30",
+        graybb: "#333333",
       },
       fontFamily: {
         body: ["BancoDoBrasil", "sans-serif"],

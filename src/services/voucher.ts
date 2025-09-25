@@ -9,5 +9,7 @@ export const voucherService = {
       return api.post(`/voucher/${code}/rescue`, data);
     }
   },
+  checkOwnerVoucher: (code: string, body: any) =>
+    api.post(`voucher/${code}/check-onwer`, body),
   checkStatus: (code: string) => api.get(`/voucher/${code}/status`),
 };

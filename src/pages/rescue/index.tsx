@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+
 import { useParams } from "react-router-dom";
 import { voucherService } from "../../services/voucher";
 import type { VoucherEntity } from "../../types/voucher";
@@ -7,6 +8,10 @@ import FormInfo from "../../components/FormInfo";
 import { motion, AnimatePresence } from "framer-motion";
 import Spinner from "../../components/Loading/Spinner";
 import Footer from "../../components/Footer";
+import TruncateDescription from "../../components/TruncateDescription";
+
+import { Tooltip } from "react-tooltip";
+import "react-tooltip/dist/react-tooltip.css";
 
 const Rescue = () => {
   const { code } = useParams<{ code: string }>();
@@ -18,13 +23,18 @@ const Rescue = () => {
   const [trackingCode, setTrackingCode] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false); // controla exibição do form
+  const [isConfirm, setIsConfirm] = useState(false);
+
+  const [variationIndex, setVariationIndex] = useState(0);
 
   // Busca inicial do voucher
   const getVoucher = useCallback(async (code: string) => {
     setLoading(true);
+
     try {
       const { data } = await voucherService.getVoucher(code);
       setCurrentVoucher(data);
+      setVariationIndex(1);
     } catch (e) {
       console.log("[ERROR]", e);
     } finally {
@@ -33,11 +43,11 @@ const Rescue = () => {
     }
   }, []);
 
-  const onChangeVariation = (index: number) => {
-    if (currentVoucher?.variations) {
-      setCurrentVariation(currentVoucher.variations[index]);
+  useEffect(() => {
+    if (currentVoucher?.variations?.length) {
+      setCurrentVariation(currentVoucher.variations[variationIndex]);
     }
-  };
+  }, [variationIndex]);
 
   const onUpdateStatus = useCallback((code?: string) => {
     if (!code) return;
@@ -153,37 +163,137 @@ const Rescue = () => {
       {/* Main content */}
       {!submitted && (
         <div className="container mx-auto">
-          <Header title="Resumo do mimo" />
+          <Header title="Checkout" />
 
           <div className="py-10 md:py-20 w-[90%] md:w-[80%] mx-auto">
+            <h2 className="text-xl md:text-[32px] font-medium text-graybb py-6 md:py-10">
+              Resgate o brinde desejado
+            </h2>
             <div className="product flex md:flex-row flex-col gap-14 py-10 border-b border-b-[#CECECE]">
-              <div className="thumb bg-[#F4F4F6] px-14 py-11 max-w-[50%]">
-                <img src={currentVoucher?.images[0].url} width={80} alt="" />
+              <div className="flex flex-col gap-2 justify-center md:hidden">
+                {currentVoucher?.variations && !isConfirm ? (
+                  <>
+                    <div className="flex gap-4 mb-8">
+                      {currentVoucher.variations.map(
+                        (item: VoucherEntity, index: number) => (
+                          <>
+                            <a
+                              className={`bg-[#F4F4F6] rounded-lg border-2 cursor-pointer p-1 ${
+                                currentVariation?.id === item.id
+                                  ? "border-blue border-2"
+                                  : ""
+                              }`}
+                              onClick={() => {
+                                setVariationIndex(Number(index));
+                              }}
+                              data-tooltip-id="variation-tooltip"
+                              data-tooltip-content={item.nome}
+                            >
+                              <motion.img
+                                key={index}
+                                src={item?.images[0].url}
+                                width={80}
+                                alt=""
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                              />
+                            </a>
+                          </>
+                        )
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
+
+                {currentVoucher?.variations && (
+                  <div className="flex-1 mt-6 hidden md:block">
+                    <h2 className="text-base md:text-xl font-medium font-title">
+                      {currentVariation?.nome}
+                    </h2>
+                    <TruncateDescription
+                      html={currentVariation?.descricao || ""}
+                      maxLength={200}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="thumb bg-[#F4F4F6] max-h-[272px] min-w-[272px] flex items-center justify-center">
+                <motion.img
+                  key={currentVariation?.images[0].url}
+                  src={currentVariation?.images[0].url}
+                  width={272}
+                  alt=""
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                />
               </div>
 
-              <div className="flex flex-col gap-2 justify-center">
-                <h2 className="text-base md:text-xl font-medium font-title">
-                  {currentVoucher?.nome}
-                </h2>
+              {currentVoucher?.variations && (
+                <div className="flex-1 mt-6 block md:hidden">
+                  <h2 className="text-base md:text-xl font-medium font-title">
+                    {currentVariation?.nome}
+                  </h2>
+                  <TruncateDescription
+                    html={currentVariation?.descricao || ""}
+                    maxLength={200}
+                  />
+                </div>
+              )}
+
+              <div className="md:flex flex-col gap-2 justify-center hidden">
+                {currentVoucher?.variations && !isConfirm ? (
+                  <>
+                    <div className="flex gap-4 mb-8">
+                      {currentVoucher.variations.map(
+                        (item: VoucherEntity, index: number) => (
+                          <>
+                            <a
+                              className={`bg-[#F4F4F6] rounded-lg border-2 cursor-pointer p-1 ${
+                                currentVariation?.id === item.id
+                                  ? "border-blue border-2"
+                                  : ""
+                              }`}
+                              onClick={() => {
+                                setVariationIndex(Number(index));
+                              }}
+                              data-tooltip-id="variation-tooltip"
+                              data-tooltip-content={item.nome}
+                            >
+                              <motion.img
+                                key={index}
+                                src={item?.images[0].url}
+                                width={80}
+                                alt=""
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                transition={{ duration: 0.3 }}
+                              />
+                            </a>
+                          </>
+                        )
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
 
                 {currentVoucher?.variations && (
                   <div className="flex-1 mt-6">
-                    <label className="block mb-1 md:text-xl font-normal font-body text-xl">
-                      Selecione a cor do seu brinde:
-                    </label>
-                    <select
-                      className="w-full border p-2 rounded border-[#CECECE]"
-                      onChange={(e) =>
-                        onChangeVariation(Number(e.target.value))
-                      }
-                    >
-                      <option value="">Selecione</option>
-                      {currentVoucher.variations.map((item, index) => (
-                        <option value={index} key={item.id}>
-                          {item.nome}
-                        </option>
-                      ))}
-                    </select>
+                    <h2 className="text-base md:text-xl font-medium font-title">
+                      {currentVariation?.nome}
+                    </h2>
+                    <TruncateDescription
+                      html={currentVariation?.descricao || ""}
+                      maxLength={200}
+                    />
                   </div>
                 )}
               </div>
@@ -200,6 +310,7 @@ const Rescue = () => {
 
             {!currentVoucher?.usado && (
               <FormInfo
+                setOnConfirm={() => setIsConfirm(!isConfirm)}
                 codeVoucher={code!}
                 variation={currentVariation}
                 onUpdateStatus={onUpdateStatus}
@@ -208,6 +319,17 @@ const Rescue = () => {
           </div>
         </div>
       )}
+      <Tooltip
+        id="variation-tooltip"
+        place="top"
+        style={{
+          backgroundColor: "#FCFC30",
+          color: "#465EFF",
+          borderRadius: "8px",
+          padding: "10px",
+          fontSize: "16px",
+        }}
+      />
       <Footer />
     </>
   );

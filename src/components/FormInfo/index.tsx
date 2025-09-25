@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { voucherService } from "../../services/voucher";
 import type { VoucherEntity } from "../../types/voucher";
 import ErrorMessage from "../ErrorMessage";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Spinner from "../Loading/Spinner";
 import ConfirmDialog from "../Confirm";
 import { isValidDocument } from "../../util/fns";
@@ -16,11 +16,17 @@ type props = {
   codeVoucher: string;
   variation?: VoucherEntity | null;
   onUpdateStatus: (val?: string) => void;
+  setOnConfirm: () => void;
 };
 
-const FormInfo = ({ codeVoucher, variation }: props) => {
+const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { email } = location.state || {};
 
+  const [onConfirmData, setOnConfirmData] = useState(false);
+
+  const [isPrivateVoucher, setIsPrivateVoucher] = useState(false);
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
@@ -34,14 +40,17 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
     control,
     setValue,
     watch,
+    getValues,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (rescueData: any) => {
+  const handlerSubmit = async () => {
     setFormValues(null);
     setIsConfirm(false);
     setLoading(true);
     setIsSending(true);
+
+    const rescueData = getValues();
     try {
       const cleanedData = {
         ...rescueData,
@@ -55,9 +64,10 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
       );
       setIsSending(false);
       setTimeout(() => {
-        navigate(`/${response.rescue.code}/status`);
+        navigate(`/${response.rescue.code}/success`);
       }, 300);
     } catch (e: any) {
+      console.log("errror", e);
       toast.error(e.response.data.msg);
     } finally {
       setLoading(false);
@@ -66,30 +76,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
   };
 
   const onConfirm = async (rescueData: any) => {
-    setIsConfirm(true);
+    setOnConfirmData(true);
     setFormValues(rescueData);
-    // setLoading(true);
-    // setIsSending(true);
-    // try {
-    //   const cleanedData = {
-    //     ...rescueData,
-    //     document: rescueData.document?.replace(/\D/g, ""),
-    //     zipcode: rescueData.zipcode?.replace(/\D/g, ""),
-    //   };
-    //   const { data: response } = await voucherService.rescueVoucher(
-    //     codeVoucher,
-    //     cleanedData,
-    //     variation?.id
-    //   );
-    //   setIsSending(false);
-    //   setTimeout(() => {
-    //     navigate(`/${response.rescue.code}/status`);
-    //   }, 300);
-    // } catch (e) {
-    //   console.log("[error]", e);
-    // } finally {
-    //   setLoading(false);
-    // }
+    setOnConfirm();
   };
 
   const cepValue = watch("zipcode");
@@ -113,14 +102,19 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
     }
   }, [cepValue, setValue]);
 
+  useEffect(() => {
+    if (email) {
+      setIsPrivateVoucher(true);
+      setValue("email", email);
+    }
+  }, [email]);
+
+  const inputClass = `w-full  p-2 rounded ${
+    !onConfirmData ? "border border-[#CECECE]" : "border-none font-bold px-0"
+  }`;
+
   return (
     <>
-      <ConfirmDialog
-        isOpen={isConfirm}
-        data={formValues}
-        onConfirm={onSubmit}
-        onClose={() => setIsConfirm(false)}
-      />
       <AnimatePresence>
         {cepLoading || isSending ? (
           <motion.div
@@ -143,6 +137,7 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
           <></>
         )}
       </AnimatePresence>
+
       <div className="py-10">
         <h3 className="font-title font-medium text-xl md:text-[32px]">
           Preencha com os dados de entrega
@@ -181,7 +176,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                       value={field.value || ""}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
-                      className="w-full border p-2 rounded border-[#CECECE]"
+                      readOnly={onConfirmData}
+                      disabled={onConfirmData}
+                      className={inputClass}
                       placeholder="000.000.000-00"
                     />
                   )}
@@ -198,7 +195,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded border-[#CECECE]"
+                  className={inputClass}
+                  readOnly={onConfirmData}
+                  disabled={onConfirmData}
                   {...register("name", { required: "Nome é obrigatório" })}
                 />
                 {errors.name && (
@@ -213,7 +212,13 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                 </label>
                 <input
                   type="email"
-                  className="w-full border p-2 rounded border-[#CECECE]"
+                  disabled={isPrivateVoucher || onConfirmData}
+                  readOnly={isPrivateVoucher || onConfirmData}
+                  className={`w-full  p-2 rounded ${
+                    isPrivateVoucher || onConfirmData
+                      ? "border-none font-bold"
+                      : "border border-[#CECECE]"
+                  }`}
                   {...register("email", {
                     required: "Email é obrigatório",
                     pattern: {
@@ -254,7 +259,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                       value={field.value || ""}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
-                      className="w-full border p-2 rounded border-[#CECECE]"
+                      readOnly={onConfirmData}
+                      disabled={onConfirmData}
+                      className={inputClass}
                       placeholder="00000-000"
                     />
                   )}
@@ -271,7 +278,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded border-[#CECECE]"
+                  readOnly={onConfirmData}
+                  disabled={onConfirmData}
+                  className={inputClass}
                   {...register("address", {
                     required: "Endereço é obrigatório",
                   })}
@@ -288,7 +297,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded border-[#CECECE]"
+                  readOnly={onConfirmData}
+                  disabled={onConfirmData}
+                  className={inputClass}
                   {...register("number", { required: "Número é obrigatório" })}
                 />
                 {errors.number && (
@@ -305,7 +316,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded border-[#CECECE]"
+                  readOnly={onConfirmData}
+                  disabled={onConfirmData}
+                  className={inputClass}
                   {...register("neighborhood", {
                     required: "Bairro é obrigatório",
                   })}
@@ -322,7 +335,9 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                 </label>
                 <input
                   type="text"
-                  className="w-full border p-2 rounded border-[#CECECE]"
+                  readOnly={onConfirmData}
+                  disabled={onConfirmData}
+                  className={inputClass}
                   {...register("city", { required: "Cidade é obrigatória" })}
                 />
                 {errors.city && (
@@ -336,7 +351,8 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
                   Estado
                 </label>
                 <select
-                  className="w-full border p-2 rounded border-[#CECECE]"
+                  className={inputClass}
+                  disabled={onConfirmData}
                   {...register("state", { required: "Estado é obrigatório" })}
                 >
                   <option value="">Selecione</option>
@@ -353,41 +369,55 @@ const FormInfo = ({ codeVoucher, variation }: props) => {
             </div>
 
             {/* Termos */}
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="w-4 h-4"
-                {...register("termos", {
-                  required: "Você deve aceitar os termos",
-                })}
-              />
-              <label className="text-sm">
-                Declaro ter lido e concordado com os termos do{" "}
-                <a
-                  href="http://google.com"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue text-underline font-bold"
-                >
-                  regulamento
-                </a>
-                .
-              </label>
-            </div>
-            {errors.termos && (
-              <ErrorMessage error={errors.termos.message as string} />
+            {!onConfirmData && (
+              <>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4"
+                    {...register("termos", {
+                      required: "Você deve aceitar os termos",
+                    })}
+                  />
+                  <label className="text-sm">
+                    Declaro ter lido e concordado com os termos do{" "}
+                    <a
+                      href="http://google.com"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue text-underline font-bold"
+                    >
+                      regulamento
+                    </a>
+                    .
+                  </label>
+                </div>
+                {errors.termos && (
+                  <ErrorMessage error={errors.termos.message as string} />
+                )}
+              </>
             )}
 
             <div className="w-full border-b border-b[#CECECE] p-0 md:pb-10"></div>
 
             <div>
-              <button
-                type="submit"
-                disabled={loading}
-                className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
-              >
-                {loading ? "Resgatando..." : "Resgatar mimo"}
-              </button>
+              {!onConfirmData ? (
+                <button
+                  type="submit"
+                  className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
+                >
+                  Resgatar
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={loading}
+                  onClick={handlerSubmit}
+                  className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
+                >
+                  {loading ? "Resgatando..." : "Confirmar resgate"}
+                </button>
+              )}
             </div>
           </form>
         </div>

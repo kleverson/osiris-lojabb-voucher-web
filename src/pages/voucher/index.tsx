@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import FormCheckByEmail from "../../components/FormCheckByEmail";
 
 const Voucher = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Voucher = () => {
   const [loading, setLoading] = useState(false);
 
   const [currentVoucher, setCurrentVoucher] = useState<VoucherEntity>();
+  const [isMimo, setIsMimo] = useState(true);
 
   async function getVoucher(code: string) {
     setLoading(true);
@@ -53,6 +55,15 @@ const Voucher = () => {
       getVoucher(code);
     }
   }, [code]);
+
+  useEffect(() => {
+    if (
+      currentVoucher &&
+      currentVoucher?.deposito_nome.toLocaleLowerCase().includes("unibb")
+    ) {
+      setIsMimo(false);
+    }
+  }, [currentVoucher]);
   return (
     <>
       <AnimatePresence>
@@ -126,19 +137,32 @@ const Voucher = () => {
                   </h2>
                   <div className="md:px-28 px-10 flex flex-col gap-6">
                     <h3 className="font-title font-extrabold text-[64px] md:text-[130px] text-blue leading-none relative">
-                      <span className="relative z-10">mimo</span>
-                      <div className="bg-[#00EBD0] h-4 md:h-6 w-[190px] md:w-[390px] absolute bottom-0"></div>
+                      <span className="relative z-10">
+                        {isMimo ? "mimo" : "Brinde"}
+                      </span>
+                      {isMimo ? (
+                        <div
+                          className={`bg-[#00EBD0] h-4 md:h-6 w-[190px] md:w-[390px] absolute bottom-0`}
+                        ></div>
+                      ) : (
+                        <div
+                          className={`bg-[#00EBD0] h-4 md:h-6 w-[190px] md:w-[430px] absolute bottom-0`}
+                        ></div>
+                      )}
                     </h3>
+                    {!currentVoucher?.is_private && (
+                      <>
+                        <h4 className="text-2xl md:text-5xl">
+                          {currentVoucher?.nome}
+                        </h4>
 
-                    <h4 className="text-2xl md:text-5xl">
-                      {currentVoucher?.nome}
-                    </h4>
-
-                    <p className="md:text-xl text-base">
-                      <strong>Esta quase lá!</strong> <br /> Confira os detalhes
-                      e finalize o<br /> resgate para receber seu brinde.
-                    </p>
-
+                        <p className="md:text-xl text-base">
+                          <strong>Esta quase lá!</strong> <br /> Confira os
+                          detalhes e finalize o<br /> resgate para receber seu
+                          brinde.
+                        </p>
+                      </>
+                    )}
                     {currentVoucher?.usado == true && (
                       <div className="bg-red-400 p-4 rounded-2xl">
                         <p className="md:text-xl text-base text-white">
@@ -149,19 +173,27 @@ const Voucher = () => {
                     )}
                   </div>
                   {!currentVoucher?.usado && (
-                    <div className="w-full mt-6 md:px-28 px-0">
-                      <button
-                        className={`bg-blue text-white px-6 py-4 text-base font-bold rounded-[4px] w-full md:w-auto ${
-                          currentVoucher?.usado
-                            ? "opacity-80 cursor-not-allowed"
-                            : ""
-                        }`}
-                        onClick={() => navigate(`/${code}/rescue`)}
-                        disabled={currentVoucher?.usado}
-                      >
-                        Resgatar
-                      </button>
-                    </div>
+                    <>
+                      {currentVoucher?.is_private ? (
+                        <>
+                          <FormCheckByEmail code={code} />
+                        </>
+                      ) : (
+                        <div className="w-full mt-6 md:px-28 px-0">
+                          <button
+                            className={`bg-blue text-white px-6 py-4 text-base font-bold rounded-[4px] w-full md:w-auto ${
+                              currentVoucher?.usado
+                                ? "opacity-80 cursor-not-allowed"
+                                : ""
+                            }`}
+                            onClick={() => navigate(`/${code}/rescue`)}
+                            disabled={currentVoucher?.usado}
+                          >
+                            Resgatar
+                          </button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
