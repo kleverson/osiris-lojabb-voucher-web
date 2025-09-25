@@ -8,9 +8,10 @@ import axios from "axios";
 
 type props = {
   code: string;
+  searchByEmail?: boolean;
 };
 
-const FormCheckByEmail = ({ code }: props) => {
+const FormCheckByEmail = ({ code, searchByEmail }: props) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -23,10 +24,19 @@ const FormCheckByEmail = ({ code }: props) => {
   const onSubmit = async (values: any) => {
     setLoading(true);
     try {
-      const { data } = await voucherService.checkOwnerVoucher(code, values);
+      console.log("byemail", searchByEmail);
+      if (searchByEmail) {
+        const { data } = await voucherService.checkVoucherByEmail(values.email);
 
-      if (data.code) {
-        navigate(`/${data.code}/rescue`, { state: values });
+        if (data.code) {
+          navigate(`/${data.code}/rescue`, { state: values });
+        }
+      } else {
+        const { data } = await voucherService.checkOwnerVoucher(code, values);
+
+        if (data.code) {
+          navigate(`/${data.code}/rescue`, { state: values });
+        }
       }
     } catch (error: unknown) {
       let message = "Ocorreu um erro";

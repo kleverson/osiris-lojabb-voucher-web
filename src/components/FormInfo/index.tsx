@@ -138,10 +138,12 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
         )}
       </AnimatePresence>
 
-      <div className="py-10">
-        <h3 className="font-title font-medium text-xl md:text-[32px]">
-          Preencha com os dados de entrega
-        </h3>
+      <div className={`${!onConfirmData ? "py-10" : "py-0"}`}>
+        {!onConfirmData && (
+          <h3 className="font-title font-medium text-xl md:text-[32px]">
+            Preencha com os dados de entrega
+          </h3>
+        )}
 
         <div className="py-4 md:py-10">
           <form

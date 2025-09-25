@@ -44,6 +44,15 @@ const Rescue = () => {
   }, []);
 
   useEffect(() => {
+    if (isConfirm) {
+      const el = document.getElementById("content-rescue");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [isConfirm]);
+
+  useEffect(() => {
     if (currentVoucher?.variations?.length) {
       setCurrentVariation(currentVoucher.variations[variationIndex]);
     }
@@ -165,9 +174,12 @@ const Rescue = () => {
         <div className="container mx-auto">
           <Header title="Checkout" />
 
-          <div className="py-10 md:py-20 w-[90%] md:w-[80%] mx-auto">
+          <div
+            className="py-10 md:py-20 w-[90%] md:w-[80%] mx-auto"
+            id="content-rescue"
+          >
             <h2 className="text-xl md:text-[32px] font-medium text-graybb py-6 md:py-10">
-              Resgate o brinde desejado
+              {isConfirm ? "Confirme seus dados" : "Resgate o brinde desejado"}
             </h2>
             <div className="product flex md:flex-row flex-col gap-14 py-10 border-b border-b-[#CECECE]">
               <div className="flex flex-col gap-2 justify-center md:hidden">
