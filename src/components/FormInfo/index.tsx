@@ -4,16 +4,17 @@ import { States } from "../../types/consts";
 import { InputMask } from "@react-input/mask";
 import { motion, AnimatePresence } from "framer-motion";
 import { voucherService } from "../../services/voucher";
-import type { VoucherEntity } from "../../types/voucher";
 import ErrorMessage from "../ErrorMessage";
 import { useLocation, useNavigate } from "react-router-dom";
 import Spinner from "../Loading/Spinner";
 import { isValidDocument } from "../../util/fns";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../Confirm";
+import { s } from "framer-motion/client";
 
 type props = {
   codeVoucher: string;
-  variation?: VoucherEntity | null;
+  variation?: number;
   onUpdateStatus: (val?: string) => void;
   setOnConfirm: () => void;
 };
@@ -54,10 +55,11 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
         document: rescueData.document?.replace(/\D/g, ""),
         zipcode: rescueData.zipcode?.replace(/\D/g, ""),
       };
+
       const { data: response } = await voucherService.rescueVoucher(
         codeVoucher,
         cleanedData,
-        variation?.id
+        variation
       );
       setIsSending(false);
       setTimeout(() => {
@@ -106,11 +108,7 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
     }
   }, [email]);
 
-  const inputClass = `w-full  p-2 rounded ${
-    !onConfirmData
-      ? "border border-[#CECECE]"
-      : "border-none font-bold px-0 readonly:bg-transparent readonly:border-none readonly:outline-none disabled:bg-transparent disabled:border-none"
-  }`;
+  const inputClass = `w-full  p-2 rounded  border border-[#CECECE]`;
 
   return (
     <>
@@ -136,6 +134,18 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
           <></>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        isOpen={onConfirmData}
+        data={getValues()}
+        onConfirm={function (val: any): void {
+          setOnConfirmData(false);
+          handlerSubmit();
+        }}
+        onClose={function (): void {
+          setOnConfirmData(false);
+        }}
+      />
 
       <div className={`${!onConfirmData ? "py-10" : "py-0"}`}>
         {!onConfirmData && (
@@ -402,32 +412,12 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
             <div className="w-full border-b border-b[#CECECE] p-0 md:pb-10"></div>
 
             <div>
-              {!onConfirmData ? (
-                <button
-                  type="submit"
-                  className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
-                >
-                  Resgatar
-                </button>
-              ) : (
-                <div className="flex gap-6">
-                  <button
-                    onClick={() => setOnConfirmData(false)}
-                    type="button"
-                    className=" bg-red-400 text-white w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
-                  >
-                    Editar dados
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    onClick={handlerSubmit}
-                    className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
-                  >
-                    {loading ? "Resgatando..." : "Confirmar resgate"}
-                  </button>
-                </div>
-              )}
+              <button
+                type="submit"
+                className=" bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-body font-title"
+              >
+                {loading ? "Resgatando..." : "Resgatar"}
+              </button>
             </div>
           </form>
         </div>

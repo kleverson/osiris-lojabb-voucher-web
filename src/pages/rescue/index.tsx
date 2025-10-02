@@ -1,8 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, use } from "react";
 
 import { useParams } from "react-router-dom";
 import { voucherService } from "../../services/voucher";
-import type { VoucherEntity } from "../../types/voucher";
 import Header from "../../components/Header";
 import FormInfo from "../../components/FormInfo";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,13 +11,17 @@ import TruncateDescription from "../../components/TruncateDescription";
 
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
+import type { Product, Products } from "../../types/products";
 
 const Rescue = () => {
   const { code } = useParams<{ code: string }>();
   const [loading, setLoading] = useState(false);
-  const [currentVoucher, setCurrentVoucher] = useState<VoucherEntity>();
-  const [currentVariation, setCurrentVariation] =
-    useState<VoucherEntity | null>(null);
+  const [detail, setDetail] = useState<Products>();
+  const [currentVariation, setCurrentVariation] = useState<Product | null>(
+    null
+  );
+
+  const [currentProductId, setCurrentProductId] = useState<number | null>(null);
 
   const [trackingCode, setTrackingCode] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -32,8 +35,8 @@ const Rescue = () => {
     setLoading(true);
 
     try {
-      const { data } = await voucherService.getVoucher(code);
-      setCurrentVoucher(data);
+      const { data } = await voucherService.detailProduct(code);
+      setDetail(data);
     } catch (e) {
       console.log("[ERROR]", e);
     } finally {
@@ -53,10 +56,12 @@ const Rescue = () => {
   }, [isConfirm]);
 
   useEffect(() => {
-    if (currentVoucher?.variations?.length) {
-      setCurrentVariation(currentVoucher.variations[variationIndex]);
+    if (detail?.products && detail.products.length > 0) {
+      setCurrentVariation(detail.products[variationIndex]);
+
+      setCurrentProductId(detail.products[variationIndex].id);
     }
-  }, [currentVoucher, variationIndex]);
+  }, [detail, variationIndex]);
 
   const onUpdateStatus = useCallback((code?: string) => {
     if (!code) return;
@@ -183,54 +188,56 @@ const Rescue = () => {
             </h2>
             <div className="product flex md:flex-row flex-col gap-14 py-10 border-b border-b-[#CECECE]">
               <div className="flex flex-col gap-2 justify-center md:hidden">
-                {currentVoucher?.variations && !isConfirm ? (
+                {detail?.products &&
+                detail.products.length > 0 &&
+                !isConfirm ? (
                   <>
                     <div className="flex gap-4 mb-8">
-                      {currentVoucher.variations.map(
-                        (item: VoucherEntity, index: number) => (
-                          <>
-                            <a
-                              className={`bg-[#F4F4F6] rounded-lg border-2 cursor-pointer p-1 ${
-                                currentVariation?.id === item.id
-                                  ? "border-blue border-2"
-                                  : ""
-                              }`}
-                              onClick={() => {
-                                setVariationIndex(Number(index));
-                              }}
-                              data-tooltip-id="variation-tooltip"
-                              data-tooltip-content={item.nome}
-                            >
-                              <motion.img
-                                key={index}
-                                src={item?.images[0].url}
-                                width={80}
-                                alt=""
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.3 }}
-                              />
-                            </a>
-                          </>
-                        )
-                      )}
+                      {detail.products.map((item: Product, index: number) => (
+                        <button
+                          key={index}
+                          className={`bg-[#F4F4F6] rounded-lg border-2 cursor-pointer p-1 ${
+                            currentVariation?.id === item.id
+                              ? "border-blue border-2"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            setVariationIndex(index);
+                          }}
+                          data-tooltip-id="variation-tooltip"
+                          data-tooltip-content={item.nome}
+                          aria-label={`Select ${item.nome}`}
+                        >
+                          <motion.img
+                            src={item?.images[0].url}
+                            width={80}
+                            alt={item.nome}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </button>
+                      ))}
                     </div>
                   </>
                 ) : (
                   <></>
                 )}
 
-                {currentVoucher?.variations && (
-                  <div className="flex-1 mt-6 hidden md:block">
-                    <h2 className="text-base md:text-xl font-medium font-title">
-                      {currentVariation?.nome}
-                    </h2>
-                    <TruncateDescription
-                      html={currentVariation?.descricao || ""}
-                      maxLength={200}
-                    />
-                  </div>
+                {detail?.products && (
+                  <>
+                    <div className="flex-1 mt-6 hidden md:block">
+                      <h2 className="text-base md:text-xl font-medium font-title">
+                        {currentVariation?.nome}
+                      </h2>
+                      <TruncateDescription
+                        html={currentVariation?.descricao || ""}
+                        maxLength={200}
+                      />
+                    </div>
+                    <div className="flex py-8 border-t-graybb"></div>
+                  </>
                 )}
               </div>
               <div className="thumb bg-[#F4F4F6] max-h-[272px] min-w-[272px] flex items-center justify-center">
@@ -246,59 +253,9 @@ const Rescue = () => {
                 />
               </div>
 
-              {currentVoucher?.variations && (
-                <div className="flex-1 mt-6 block md:hidden">
-                  <h2 className="text-base md:text-xl font-medium font-title">
-                    {currentVariation?.nome}
-                  </h2>
-                  <TruncateDescription
-                    html={currentVariation?.descricao || ""}
-                    maxLength={200}
-                  />
-                </div>
-              )}
-
-              <div className="md:flex flex-col gap-2 justify-center hidden">
-                {currentVoucher?.variations && !isConfirm ? (
-                  <>
-                    <div className="flex gap-4 mb-8">
-                      {currentVoucher.variations.map(
-                        (item: VoucherEntity, index: number) => (
-                          <>
-                            <a
-                              className={`bg-[#F4F4F6] rounded-lg border-2 cursor-pointer p-1 ${
-                                currentVariation?.id === item.id
-                                  ? "border-blue border-2"
-                                  : ""
-                              }`}
-                              onClick={() => {
-                                setVariationIndex(Number(index));
-                              }}
-                              data-tooltip-id="variation-tooltip"
-                              data-tooltip-content={item.nome}
-                            >
-                              <motion.img
-                                key={index}
-                                src={item?.images[0].url}
-                                width={80}
-                                alt=""
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.3 }}
-                              />
-                            </a>
-                          </>
-                        )
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <></>
-                )}
-
-                {currentVoucher?.variations && (
-                  <div className="flex-1 mt-6">
+              {detail?.products && (
+                <>
+                  <div className="flex-1 mt-6 block md:hidden">
                     <h2 className="text-base md:text-xl font-medium font-title">
                       {currentVariation?.nome}
                     </h2>
@@ -307,11 +264,78 @@ const Rescue = () => {
                       maxLength={200}
                     />
                   </div>
+                </>
+              )}
+
+              <div className="md:flex flex-col gap-2 justify-center hidden">
+                {detail?.products &&
+                detail.products.length > 0 &&
+                !isConfirm ? (
+                  <>
+                    <div className="flex gap-4 mb-8">
+                      {detail.products.map((item: Product, index: number) => (
+                        <button
+                          key={index}
+                          className={`bg-[#F4F4F6] rounded-lg border-2 cursor-pointer p-1 ${
+                            currentVariation?.id === item.id
+                              ? "border-blue border-2"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            setVariationIndex(index);
+                          }}
+                          data-tooltip-id="variation-tooltip"
+                          data-tooltip-content={item.nome}
+                          aria-label={`Select ${item.nome}`}
+                        >
+                          <motion.img
+                            src={item?.images[0].url}
+                            width={80}
+                            alt={item.nome}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
+
+                {detail?.products && (
+                  <>
+                    <div className="flex-1 mt-6">
+                      <h2 className="text-base md:text-xl font-medium font-title">
+                        {currentVariation?.nome}
+                      </h2>
+                      <TruncateDescription
+                        html={currentVariation?.descricao || ""}
+                        maxLength={200}
+                      />
+                    </div>
+                    <div className="flex py-8 border-t-graybb">
+                      <select
+                        onChange={(e) => {
+                          setCurrentProductId(Number(e.target.value));
+                        }}
+                        className="border border-graybb rounded-lg p-2 mt-4 w-full md:w-1/2"
+                      >
+                        {currentVariation?.sizes?.map((size, index: number) => (
+                          <option key={index} value={size.id}>
+                            {size.nome}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
 
-            {currentVoucher?.usado == true && (
+            {detail?.usado == true && (
               <div className="bg-red-400 p-4 rounded-2xl my-6">
                 <p className="md:text-xl text-base text-white">
                   <strong>Ops!</strong> <br /> Este voucher não esta mais
@@ -320,11 +344,11 @@ const Rescue = () => {
               </div>
             )}
 
-            {!currentVoucher?.usado && (
+            {!detail?.usado && (
               <FormInfo
                 setOnConfirm={() => setIsConfirm(!isConfirm)}
                 codeVoucher={code!}
-                variation={currentVariation}
+                variation={currentProductId}
                 onUpdateStatus={onUpdateStatus}
               />
             )}

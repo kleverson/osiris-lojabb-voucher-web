@@ -14,4 +14,5 @@ export const voucherService = {
   checkVoucherByEmail: (email: string) =>
     api.post(`voucher/search-voucher`, { email: email }),
   checkStatus: (code: string) => api.get(`/voucher/${code}/status`),
+  detailProduct: (code: string) => api.get(`/voucher/${code}/detail-product`),
 };

@@ -32,9 +32,9 @@ const Rescue = () => {
   return (
     <>
       <div
-        className="wrapper h-auto md:h-screen w-screen bg-[url('/imgs/bg_mobile.png')] md:bg-[url('/imgs/bg.png')] bg-cover bg-center md:bg-right"
+        className="wrapper h-auto md:h-screen w-screen bg-yellow bg-[url('/imgs/bg_success.png')] md:bg-[url('/imgs/bg_success.png')] bg-cover bg-center md:bg-right"
         style={{
-          backgroundSize: window.innerWidth < 768 ? "100% 100%" : "90% 100%",
+          backgroundSize: window.innerWidth < 768 ? "cover" : "90% 100%",
         }}
       >
         <div className="container mx-auto py-6 pb-0 md:pb-6 md:py-10">
@@ -44,7 +44,7 @@ const Rescue = () => {
         </div>
 
         <div className="container mx-auto  mt-0 md:mt-4 h-full md:h-auto flex md:block">
-          <div className="flex gap-6 md:pl-24 flex-col items-center justify-center max-w-[800px] mx-auto relative md:top-0 top-[220px]">
+          <div className="flex gap-6 md:pl-24 flex-col items-center justify-center max-w-[800px] mx-auto relative md:top-0 top-[30px] pb-9">
             <div className="flex flex-col mt-10">
               <div className="flex flex-col gap-4 border-b-[1px] border-blue pb-6 mb-6 md:pb-10 md:mb-10 text-center max-w-[90%] mx-auto md:max-w-[100%] ">
                 <svg
@@ -88,12 +88,12 @@ const Rescue = () => {
                 </p>
               </div>
 
-              <div className="flex md:flex-row flex-col justify-between gap-6 md:gap-14 ">
+              <div className="flex flex-col justify-between gap-6 md:gap-14 ">
                 <div className="thumb flex md:flex-row flex-col gap-5 items-start px-8">
                   <motion.img
                     key={currentShipping?.product?.images[0].url}
                     src={currentShipping?.product?.images[0].url}
-                    width={window.innerWidth >= 800 ? 80 : 120}
+                    width={200}
                     alt=""
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -105,56 +105,31 @@ const Rescue = () => {
                     {currentShipping?.product.nome}
                   </h2>
                 </div>
-                <div className="md:hidden border-b-[1px] border-blue w-full max-w-[90%] mx-auto md:max-w-[100%]"></div>
-                <div className="flex flex-col gap-4 bg-yellow px-8">
-                  <div className="flex-1 gap-2">
-                    <h4 className="text-xl font-medium font-title">
-                      Informações de contato
-                    </h4>
-                    <p>{currentShipping?.shipping.name}</p>
-                    <p>{currentShipping?.shipping.email}</p>
-                  </div>
+                {/* <div className="md:hidden border-b-[1px] border-blue w-full max-w-[90%] mx-auto md:max-w-[100%]"></div> */}
+                <div className="flex flex-col gap-4 px-8">
+                  <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                    <div className="flex-1 gap-2">
+                      <h4 className="text-xl font-medium font-title">
+                        Informações de contato
+                      </h4>
+                      <p>{currentShipping?.shipping.name}</p>
+                      <p>{currentShipping?.shipping.email}</p>
+                    </div>
 
-                  <div className="flex-1 gap-2 py-5">
-                    <h4 className="text-xl font-medium font-title">
-                      Endereço pra entrega
-                    </h4>
-                    <p>
-                      CEP {currentShipping?.shipping.address.cep} <br />
-                      {currentShipping?.shipping.address.endereco}{" "}
-                      {currentShipping?.shipping.address.numero},{" "}
-                      {currentShipping?.shipping.address.bairro},{" "}
-                      {currentShipping?.shipping.address.municipio} -{" "}
-                      {currentShipping?.shipping.address.uf}
-                    </p>
-                  </div>
-
-                  {currentShipping?.shipping.trackingUrl ? (
-                    <div className="flex-1 gap-2 py-5">
+                    <div className="flex-1 gap-2">
+                      <h4 className="text-xl font-medium font-title">
+                        Endereço pra entrega
+                      </h4>
                       <p>
-                        <strong className="text-xl font-medium font-title">
-                          Previsão de entrega:
-                        </strong>{" "}
-                        {currentShipping?.shipping.delivery_estimated}
-                      </p>
-                      <p>
-                        <strong className="text-xl font-medium font-title">
-                          Para mais detalhes, acesse:
-                        </strong>
-                        <br />
-                        <a
-                          href={currentShipping?.shipping.trackingUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue text-underline font-bold"
-                        >
-                          {currentShipping?.shipping.trackingUrl}
-                        </a>
+                        CEP {currentShipping?.shipping.address.cep} <br />
+                        {currentShipping?.shipping.address.endereco}{" "}
+                        {currentShipping?.shipping.address.numero},{" "}
+                        {currentShipping?.shipping.address.bairro},{" "}
+                        {currentShipping?.shipping.address.municipio} -{" "}
+                        {currentShipping?.shipping.address.uf}
                       </p>
                     </div>
-                  ) : (
-                    <div className="flex-1 gap-2 py-5"></div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>

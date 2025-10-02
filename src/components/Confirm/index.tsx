@@ -18,7 +18,7 @@ const ConfirmDialog = ({ isOpen, data, onConfirm, onClose }: props) => {
           className="fixed inset-0 z-50 bg-black/70 flex flex-col items-center justify-center gap-4"
         >
           <div className="bg-white p-4 rounded-2xl">
-            <h3 className="py-4 border-b border-b-gray-300 md:text-2xl text-xl font-title text-blue leading-none mb-5">
+            <h3 className="py-4 border-b border-b-gray-300 md:text-2xl text-xl font-title text-black leading-none mb-5">
               Para concluir o resgate, confirme os dados abaixo
             </h3>
 
@@ -71,13 +71,13 @@ const ConfirmDialog = ({ isOpen, data, onConfirm, onClose }: props) => {
             <div className="border-t border-t-gray-300 py-4 mt-5 flex justify-between">
               <button
                 onClick={onClose}
-                className="bg-red-400 text-white w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-bold font-title"
+                className="bg-red-400 text-white w-full md:w-auto  py-3 px-8 rounded hover:opacity-90 font-bold font-title"
               >
-                Cancelar
+                Editar dados
               </button>
               <button
                 onClick={() => onConfirm(data)}
-                className="bg-yellow text-blue w-full md:w-auto  py-4 px-8 rounded hover:opacity-90 font-bold font-title"
+                className="bg-yellow text-blue w-full md:w-auto  py-3 px-8 rounded hover:opacity-90 font-bold font-title"
               >
                 Confirmar
               </button>

@@ -84,7 +84,7 @@ const Status = () => {
 
         <div className="py-10 md:py-20 w-[90%] md:w-[80%] mx-auto">
           <div className="product flex md:flex-row flex-col gap-14 py-10 border-b border-b-[#CECECE]">
-            <div className="thumb bg-[#F4F4F6] px-14 py-11 max-w-[200px]">
+            <div className="thumb bg-[#F4F4F6] max-w-[200px]">
               <img
                 src={currentShipping?.product.images[0].url}
                 height={80}
