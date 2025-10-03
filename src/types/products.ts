@@ -3,6 +3,7 @@ export interface Products {
   totalItens: number;
   products: Product[];
   usado?: boolean;
+  is_private?: boolean;
 }
 
 export interface Product {

@@ -1,7 +1,7 @@
 import axios from "axios";
-//https://api.lojabbprodutos.com.br
+//
 const api = axios.create({
-  baseURL: "http://localhost:8585/api/v1",
+  baseURL: "https://api.lojabbprodutos.com.br/api/v1",
   timeout: 300000,
   headers: {
     "Content-Type": "application/json",

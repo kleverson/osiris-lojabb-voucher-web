@@ -56,15 +56,37 @@ const FormInfo = ({ codeVoucher, variation, setOnConfirm }: props) => {
         zipcode: rescueData.zipcode?.replace(/\D/g, ""),
       };
 
+      const payload = {
+        usuario: {
+          nome: rescueData.name,
+          email: rescueData.email,
+          cpf: cleanedData.document,
+          ddd: null,
+          contato: null,
+          endereco: {
+            logradouro: rescueData.address,
+            numero: rescueData.number,
+            bairro: rescueData.neighborhood,
+            cidade: rescueData.city,
+            estado: rescueData.state,
+            cep: cleanedData.zipcode,
+            complemento: null,
+          },
+        },
+        produtos: [{ id: variation }],
+      };
+
+      console.log("cleanedData", payload);
+
       const { data: response } = await voucherService.rescueVoucher(
         codeVoucher,
-        cleanedData,
-        variation
+        payload
       );
-      setIsSending(false);
-      setTimeout(() => {
-        navigate(`/${response.rescue.code}/success`);
-      }, 300);
+      console.log("response", response);
+      // setIsSending(false);
+      // setTimeout(() => {
+      //   navigate(`/${response.rescue.code}/success`);
+      // }, 300);
     } catch (e: any) {
       console.log("errror", e);
       toast.error(e.response.data.msg);

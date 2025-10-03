@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback, use } from "react";
 
-import { useParams } from "react-router-dom";
+import {
+  redirect,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { voucherService } from "../../services/voucher";
 import Header from "../../components/Header";
 import FormInfo from "../../components/FormInfo";
@@ -12,8 +17,10 @@ import TruncateDescription from "../../components/TruncateDescription";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import type { Product, Products } from "../../types/products";
+import { toast } from "react-toastify";
 
 const Rescue = () => {
+  const navigate = useNavigate();
   const { code } = useParams<{ code: string }>();
   const [loading, setLoading] = useState(false);
   const [detail, setDetail] = useState<Products>();
@@ -29,6 +36,9 @@ const Rescue = () => {
   const [isConfirm, setIsConfirm] = useState(false);
 
   const [variationIndex, setVariationIndex] = useState(0);
+
+  const location = useLocation();
+  const { email } = location.state || {};
 
   // Busca inicial do voucher
   const getVoucher = useCallback(async (code: string) => {
@@ -60,6 +70,11 @@ const Rescue = () => {
       setCurrentVariation(detail.products[variationIndex]);
 
       setCurrentProductId(detail.products[variationIndex].id);
+    }
+
+    if (detail?.is_private && !email) {
+      toast.info("Por favor, informe seu email para resgatar o mimo");
+      navigate("/");
     }
   }, [detail, variationIndex]);
 
@@ -188,9 +203,7 @@ const Rescue = () => {
             </h2>
             <div className="product flex md:flex-row flex-col gap-14 py-10 border-b border-b-[#CECECE]">
               <div className="flex flex-col gap-2 justify-center md:hidden">
-                {detail?.products &&
-                detail.products.length > 0 &&
-                !isConfirm ? (
+                {detail?.products && detail.products.length > 0 ? (
                   <>
                     <div className="flex gap-4 mb-8">
                       {detail.products.map((item: Product, index: number) => (
@@ -268,9 +281,7 @@ const Rescue = () => {
               )}
 
               <div className="md:flex flex-col gap-2 justify-center hidden">
-                {detail?.products &&
-                detail.products.length > 0 &&
-                !isConfirm ? (
+                {detail?.products && detail.products.length > 0 ? (
                   <>
                     <div className="flex gap-4 mb-8">
                       {detail.products.map((item: Product, index: number) => (
@@ -316,20 +327,24 @@ const Rescue = () => {
                         maxLength={200}
                       />
                     </div>
-                    <div className="flex py-8 border-t-graybb">
-                      <select
-                        onChange={(e) => {
-                          setCurrentProductId(Number(e.target.value));
-                        }}
-                        className="border border-graybb rounded-lg p-2 mt-4 w-full md:w-1/2"
-                      >
-                        {currentVariation?.sizes?.map((size, index: number) => (
-                          <option key={index} value={size.id}>
-                            {size.nome}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {Number(currentVariation?.sizes?.length) > 0 && (
+                      <div className="flex py-8 border-t-graybb">
+                        <select
+                          onChange={(e) => {
+                            setCurrentProductId(Number(e.target.value));
+                          }}
+                          className="border border-graybb rounded-lg p-2 mt-4 w-full md:w-1/2"
+                        >
+                          {currentVariation?.sizes?.map(
+                            (size, index: number) => (
+                              <option key={index} value={size.id}>
+                                {size.nome}
+                              </option>
+                            )
+                          )}
+                        </select>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
